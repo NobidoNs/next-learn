@@ -1,18 +1,22 @@
-import AcmeLogo from '@/app/ui/acme-logo'
-import { ArrowRightIcon } from '@heroicons/react/24/outline'
+'use client'
 import Link from 'next/link'
-import { lusitana } from '@/app/ui/fonts'
 import Image from 'next/image'
+import { useSession } from 'next-auth/react'
 
 export default function Page() {
+	const session = useSession()
+	let image = session.data?.user?.image
+	if (!image) {
+		image = '/icon.png'
+	}
 	return (
 		<main className='flex min-h-screen flex-col p-6'>
 			<Link href='/profile'>
 				<div className='profile-icon'>
 					<Image
-						src='/hero-mobile.png'
-						width={560}
-						height={620}
+						src={image}
+						width={800}
+						height={800}
 						alt='Screenshot of the dashboard project showing mobile version'
 					/>
 				</div>

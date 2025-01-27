@@ -1,9 +1,16 @@
+'use client'
 import { lusitana } from '@/app/ui/fonts'
 import Image from 'next/image'
 import Link from 'next/link'
-import { signOut } from '@/auth'
+import { useSession } from 'next-auth/react'
+// import { signOut } from '@/auth'
 
 export default function ProfilePage() {
+	const session = useSession()
+	let image = session.data?.user?.image
+	if (!image) {
+		image = '/icon.png'
+	}
 	return (
 		<main className='flex min-h-screen flex-col p-6'>
 			<div className='flex justify-between items-center mb-4'>
@@ -52,7 +59,7 @@ export default function ProfilePage() {
 					<div className='flex flex-col md:flex-row gap-8 items-center md:items-start'>
 						<div className='flex-shrink-0'>
 							<Image
-								src='/hero-mobile.png'
+								src={image}
 								width={150}
 								height={150}
 								className='rounded-full'
