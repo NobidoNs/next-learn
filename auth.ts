@@ -5,6 +5,7 @@ import { sql } from '@vercel/postgres'
 import { z } from 'zod'
 import type { User } from '@/app/lib/definitions'
 import { authConfig } from './auth.config'
+// import GoogleProvider from 'next-auth/providers/google'
 
 async function getUser(email: string): Promise<User | undefined> {
 	try {
@@ -39,5 +40,9 @@ export const { auth, signIn, signOut } = NextAuth({
 				return null
 			},
 		}),
+		// GoogleProvider({
+		// 	clientId: process.env.GOOGLE_CLIENT_ID!,
+		// 	clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+		// }),
 	],
 })
