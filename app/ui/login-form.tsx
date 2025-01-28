@@ -1,85 +1,50 @@
-'use client';
+'use client'
 
-import { authenticate } from '@/app/lib/actions';
-import { lusitana } from '@/app/ui/fonts';
-import {
-  AtSymbolIcon,
-  KeyIcon,
-  ExclamationCircleIcon,
-} from '@heroicons/react/24/outline';
-import { ArrowRightIcon } from '@heroicons/react/20/solid';
-import { Button } from './button';
-import { useActionState } from 'react';
+import { signIn } from 'next-auth/react'
+import Image from 'next/image'
 
 export default function LoginForm() {
-  const [errorMessage, formAction, isPending] = useActionState(
-    authenticate,
-    undefined,
-  );
+	return (
+		<div className='flex items-center justify-center min-h-[80vh]'>
+			<div className='w-full max-w-md space-y-4 rounded-xl bg-white p-8 shadow-2xl hover:shadow-3xl transition-all duration-300 backdrop-blur-sm'>
+				<div className='text-center'>
+					<h2 className='mt-2 text-3xl font-bold tracking-tight text-gray-900 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent transform hover:scale-105 transition-transform duration-200'>
+						Welcome
+					</h2>
+					<p className='mt-2 text-sm text-gray-600 animate-fade-in'>
+						Please sign in to continue your journey
+					</p>
+				</div>
 
-  return (
-    <form action={formAction} className="space-y-3">
-      <div className="flex-1 rounded-lg bg-gray-50 px-6 pb-4 pt-8">
-        <h1 className={`${lusitana.className} mb-3 text-2xl`}>
-          Please log in to continue.
-        </h1>
-        <div className="w-full">
-          <div>
-            <label
-              className="mb-3 mt-5 block text-xs font-medium text-gray-900"
-              htmlFor="email"
-            >
-              Email
-            </label>
-            <div className="relative">
-              <input
-                className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
-                id="email"
-                type="email"
-                name="email"
-                placeholder="Enter your email address"
-                required
-              />
-              <AtSymbolIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
-            </div>
-          </div>
-          <div className="mt-4">
-            <label
-              className="mb-3 mt-5 block text-xs font-medium text-gray-900"
-              htmlFor="password"
-            >
-              Password
-            </label>
-            <div className="relative">
-              <input
-                className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
-                id="password"
-                type="password"
-                name="password"
-                placeholder="Enter password"
-                required
-                minLength={6}
-              />
-              <KeyIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
-            </div>
-          </div>
-        </div>
-        <Button className="mt-4 w-full" aria-disabled={isPending}>
-          Log in <ArrowRightIcon className="ml-auto h-5 w-5 text-gray-50" />
-        </Button>
-        <div
-          className="flex h-8 items-end space-x-1"
-          aria-live="polite"
-          aria-atomic="true"
-        >
-          {errorMessage && (
-            <>
-              <ExclamationCircleIcon className="h-5 w-5 text-red-500" />
-              <p className="text-sm text-red-500">{errorMessage}</p>
-            </>
-          )}
-        </div>
-      </div>
-    </form>
-  );
+				<div className='mt-6 space-y-6 '>
+					<button
+						onClick={() => signIn('google', { callbackUrl: '/' })}
+						className='group relative flex w-full justify-center rounded-lg border-2 border-gray-300 bg-white px-6 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:scale-102 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-lg transition-all duration-200 hover:shadow-xl'
+					>
+						<span className='flex items-center'>
+							<Image
+								src='https://authjs.dev/img/providers/google.svg'
+								alt='Google logo'
+								width={24}
+								height={24}
+								className='mr-3 transform group-hover:rotate-12 transition-transform duration-200'
+							/>
+							Sign in with Google
+						</span>
+					</button>
+
+					<div className='relative'>
+						<div className='absolute inset-0 flex items-center'>
+							<div className='w-full border-t border-gray-300' />
+						</div>
+						<div className='relative flex justify-center text-sm'>
+							<span className='bg-white px-4 text-gray-500 hover:text-gray-700 transition-colors duration-200'>
+								or continue with email
+							</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	)
 }

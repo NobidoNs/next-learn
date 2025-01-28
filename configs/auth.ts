@@ -17,6 +17,9 @@ async function getUser(email: string): Promise<User | undefined> {
 }
 
 export const authConfig: AuthOptions = {
+	pages: {
+		signIn: '/login',
+	},
 	providers: [
 		GoogleProvider({
 			clientId: process.env.GOOGLE_CLIENT_ID!,
