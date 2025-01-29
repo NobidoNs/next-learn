@@ -6,6 +6,8 @@ import { useState, useEffect } from 'react'
 
 export default function ProfilePage() {
 	const [session, setSession] = useState(null)
+	const [inputText, setInputText] = useState('')
+	const [inputValue, setInputValue] = useState('')
 
 	const fetchMe = async (url: string) => {
 		const res = await fetch(url)
@@ -35,6 +37,13 @@ export default function ProfilePage() {
 		created_at = session['created_at']
 		rank = session['rank']
 		score = session['score']
+	}
+
+	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault()
+		// Perform any necessary actions with the inputText and inputValue
+		console.log('Input Text:', inputText)
+		console.log('Input Value:', inputValue)
 	}
 
 	return (
@@ -128,7 +137,43 @@ export default function ProfilePage() {
 							</div>
 						</div>
 					</div>
-
+					<div className='mt-4'>
+						<form onSubmit={handleSubmit}>
+							<div className='flex gap-4'>
+								<input
+									type='text'
+									className='p-2 rounded-lg border border-purple-200 flex-grow'
+									placeholder='Enter Task'
+									value={inputText}
+									onChange={e => setInputText(e.target.value)}
+								/>
+								<input
+									type='number'
+									className='p-2 rounded-lg border border-purple-200 w-20'
+									placeholder='Points'
+									value={inputValue}
+									onChange={e => {
+										const points = parseInt(e.target.value)
+										if (points >= 0 && points <= 100) {
+											setInputValue(points.toString() as string)
+										} else if (points < 0) {
+											setInputValue('0')
+										} else if (points > 100) {
+											setInputValue('100')
+										} else if (isNaN(points)) {
+											setInputValue('')
+										}
+									}}
+								/>
+								<button
+									type='submit'
+									className='p-2 rounded-lg bg-gradient-to-r from-violet-500 to-indigo-500 text-white hover:from-violet-600 hover:to-indigo-600 transition-colors duration-200'
+								>
+									Submit
+								</button>
+							</div>
+						</form>
+					</div>
 					<div className='mt-8 pt-8 border-t border-purple-100'>
 						<h2
 							className={`${lusitana.className} text-2xl font-bold mb-4 bg-gradient-to-r from-violet-600 to-indigo-600 text-transparent bg-clip-text`}
@@ -150,21 +195,21 @@ export default function ProfilePage() {
 										<td className='p-4 font-medium text-indigo-600'>
 											Won tournament
 										</td>
-										<td className='p-4 text-green-600 font-medium'>+500</td>
+										<td className='p-4 text-green-600 font-medium'>+50</td>
 									</tr>
 									<tr className='hover:bg-purple-50 transition-colors duration-200'>
 										<td className='p-4'>2023-11-28</td>
 										<td className='p-4 font-medium text-indigo-600'>
 											Daily challenge completed
 										</td>
-										<td className='p-4 text-green-600 font-medium'>+100</td>
+										<td className='p-4 text-green-600 font-medium'>+10</td>
 									</tr>
 									<tr className='hover:bg-purple-50 transition-colors duration-200'>
 										<td className='p-4'>2023-11-25</td>
 										<td className='p-4 font-medium text-indigo-600'>
 											Achievement unlocked
 										</td>
-										<td className='p-4 text-green-600 font-medium'>+250</td>
+										<td className='p-4 text-green-600 font-medium'>+25</td>
 									</tr>
 								</tbody>
 							</table>
