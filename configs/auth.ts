@@ -5,6 +5,7 @@ import { z } from 'zod'
 import bcrypt from 'bcrypt'
 import type { User } from '@/app/lib/definitions'
 import { sql } from '@vercel/postgres'
+import dayjs from 'dayjs'
 
 async function getUser(email: string): Promise<User | undefined> {
 	try {
@@ -16,9 +17,60 @@ async function getUser(email: string): Promise<User | undefined> {
 	}
 }
 
+async function createUser(
+	// input
+	email: string,
+	password: string,
+	name?: string,
+	image?: string
+): Promise<User> {
+	// id
+	const { v4: uuidv4 } = require('uuid')
+	const id = uuidv4()
+	// password
+	let hashedPassword = null
+	if (password) {
+		const salt = await bcrypt.genSalt(10)
+		hashedPassword = await bcrypt.hash(password, salt)
+	} else {
+		hashedPassword = 'supersecret'
+	}
+	// add to db
+	try {
+		const result = await sql<User>`
+      INSERT INTO users (id, email, password, name, created, created_at, image, rank, score)
+      VALUES (${id}, ${email}, ${hashedPassword}, ${
+			name || null
+		}, ${Date.now()}, ${dayjs().format('YYYY-MM-DD')}, ${image}, ${'-'}, ${0})
+      RETURNING *
+    `
+		return result.rows[0]
+		// error
+	} catch (error) {
+		console.error('Failed to create user:', error)
+		throw new Error('Failed to create user.')
+	}
+}
+
 export const authConfig: AuthOptions = {
 	pages: {
 		signIn: '/login',
+	},
+	callbacks: {
+		async session({ session, user, token }) {
+			const userData = await getUser(session.user?.email!)
+			if (!userData) {
+				await createUser(
+					session.user?.email!,
+					token.password as string,
+					session.user?.name as string,
+					session.user?.image as string
+				)
+			}
+			return {
+				...session,
+			}
+		},
 	},
 	providers: [
 		GoogleProvider({
@@ -26,7 +78,6 @@ export const authConfig: AuthOptions = {
 			clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
 		}),
 		Credentials({
-			name: 'Credentials',
 			credentials: {
 				email: {
 					label: 'Email',

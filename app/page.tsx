@@ -1,14 +1,30 @@
 'use client'
 import Link from 'next/link'
 import Image from 'next/image'
-import { useSession } from 'next-auth/react'
+import { useEffect, useState } from 'react'
 
 export default function Page() {
-	const session = useSession()
-	console.log(session)
-	let image = session.data?.user?.image
-	if (!image) {
-		image = '/icon.png'
+	const [session, setSession] = useState(null)
+
+	const fetchMe = async (url: string) => {
+		const res = await fetch(url)
+		const data = await res.json()
+		return data
+	}
+
+	useEffect(() => {
+		const getSession = async () => {
+			const data = await fetchMe('/api/me')
+			setSession(data['data'])
+		}
+		getSession()
+	}, [])
+
+	// const session = fetchMe('/api/me')
+
+	let image = '/icon.png'
+	if (session) {
+		image = session['image']
 	}
 	return (
 		<main className='flex min-h-screen flex-col p-6'>

@@ -19,7 +19,7 @@ export default function LoginForm() {
 				<div className='mt-6 space-y-6 '>
 					<button
 						onClick={() => signIn('google', { callbackUrl: '/' })}
-						className='group relative flex w-full justify-center rounded-lg border-2 border-gray-300 bg-white px-6 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:scale-102 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-lg transition-all duration-200 hover:shadow-xl'
+						className='group relative flex w-full justify-center rounded-lg border-2 border-gray-300 bg-white px-6 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:scale-102 hover:border-gray-400 focus:outline-none focus:ring-offset-2 shadow-lg transition-all duration-200 hover:shadow-xl'
 					>
 						<span className='flex items-center'>
 							<Image

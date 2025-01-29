@@ -2,14 +2,41 @@
 import { lusitana } from '@/app/ui/fonts'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useSession } from 'next-auth/react'
+import { useState, useEffect } from 'react'
 
 export default function ProfilePage() {
-	const session = useSession()
-	let image = session.data?.user?.image
-	if (!image) {
-		image = '/icon.png'
+	const [session, setSession] = useState(null)
+
+	const fetchMe = async (url: string) => {
+		const res = await fetch(url)
+		const data = await res.json()
+		return data
 	}
+
+	useEffect(() => {
+		const getSession = async () => {
+			const data = await fetchMe('/api/me')
+			setSession(data['data'])
+		}
+		getSession()
+	}, [])
+
+	let image = '/icon.png'
+	let name = ''
+	let email = ''
+	let created_at = ''
+	let rank = '-'
+	let score = 0
+
+	if (session) {
+		image = session['image']
+		name = session['name']
+		email = session['email']
+		created_at = session['created_at']
+		rank = session['rank']
+		score = session['score']
+	}
+
 	return (
 		<main className='flex min-h-screen flex-col p-6'>
 			<div className='flex justify-between items-center mb-4'>
@@ -70,17 +97,17 @@ export default function ProfilePage() {
 							<h1
 								className={`${lusitana.className} text-3xl font-bold mb-4 bg-gradient-to-r from-violet-600 to-indigo-600 text-transparent bg-clip-text`}
 							>
-								John Doe
+								{name}
 							</h1>
 
 							<div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-6'>
 								<div className='stat-card p-6 bg-gradient-to-br from-violet-50 to-indigo-50 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 border border-purple-100'>
 									<h3 className='text-indigo-700 font-medium'>Rank</h3>
-									<p className='text-2xl font-bold text-indigo-700'>#1</p>
+									<p className='text-2xl font-bold text-indigo-700'>{rank}</p>
 								</div>
 								<div className='stat-card p-6 bg-gradient-to-br from-pink-50 to-rose-50 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 border border-pink-100'>
 									<h3 className='text-indigo-700 font-medium'>Score</h3>
-									<p className='text-2xl font-bold text-indigo-700'>1000</p>
+									<p className='text-2xl font-bold text-indigo-700'>{score}</p>
 								</div>
 							</div>
 
@@ -89,19 +116,14 @@ export default function ProfilePage() {
 									<span className='font-medium w-24 text-violet-700'>
 										Email:
 									</span>
-									<span>john.doe@example.com</span>
+									<span>{email}</span>
 								</div>
-								<div className='flex gap-4 hover:bg-purple-50 p-2 rounded-lg transition-colors duration-200'>
-									<span className='font-medium w-24 text-violet-700'>
-										Location:
-									</span>
-									<span>San Francisco</span>
-								</div>
+
 								<div className='flex gap-4 hover:bg-purple-50 p-2 rounded-lg transition-colors duration-200'>
 									<span className='font-medium w-24 text-violet-700'>
 										Member since:
 									</span>
-									<span>2023</span>
+									<span>{created_at}</span>
 								</div>
 							</div>
 						</div>
