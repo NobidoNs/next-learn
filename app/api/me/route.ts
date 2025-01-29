@@ -8,7 +8,6 @@ async function getUser(
 ): Promise<User | undefined> {
 	try {
 		const user = await sql<User>`SELECT * FROM users WHERE email=${email}`
-		console.log('Fetched user:', user.rows[0])
 		return user.rows[0]
 	} catch (error) {
 		console.error('Failed to fetch user:', error)
@@ -20,7 +19,7 @@ export async function GET(request: Request) {
 	const session = await getServerSession(authConfig)
 	const data = await getUser(session?.user?.email)
 
-	return new Response(JSON.stringify({ data: data }), {
+	return new Response(JSON.stringify(data), {
 		status: 200,
 		headers: {
 			'Content-Type': 'application/json',

@@ -18,7 +18,7 @@ export default function ProfilePage() {
 	useEffect(() => {
 		const getSession = async () => {
 			const data = await fetchMe('/api/me')
-			setSession(data['data'])
+			setSession(data)
 		}
 		getSession()
 	}, [])
@@ -39,11 +39,22 @@ export default function ProfilePage() {
 		score = session['score']
 	}
 
-	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-		e.preventDefault()
-		// Perform any necessary actions with the inputText and inputValue
-		console.log('Input Text:', inputText)
-		console.log('Input Value:', inputValue)
+	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+		if (session && inputText && inputValue) {
+			e.preventDefault()
+			// Perform any necessary actions with the inputText and inputValue
+			await fetch('/api/invoices', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json;charset=utf-8',
+				},
+				body: JSON.stringify({
+					user_id: session['id'],
+					name: inputText,
+					amount: inputValue,
+				}),
+			})
+		}
 	}
 
 	return (

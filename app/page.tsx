@@ -15,7 +15,7 @@ export default function Page() {
 	useEffect(() => {
 		const getSession = async () => {
 			const data = await fetchMe('/api/me')
-			setSession(data['data'])
+			setSession(data)
 		}
 		getSession()
 	}, [])
