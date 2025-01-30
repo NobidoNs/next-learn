@@ -1,8 +1,5 @@
-import { authConfig } from '@/configs/auth'
-import { getServerSession } from 'next-auth/next'
 import { sql } from '@vercel/postgres'
 import type { User } from '@/app/lib/definitions'
-import dayjs from 'dayjs'
 
 async function createInvoice(
 	// input
@@ -16,11 +13,11 @@ async function createInvoice(
 
 	// add to db
 	try {
-		const createdAt = dayjs().format('YYYY-MM-DD')
+		// const createdAt = dayjs().format('YYYY-MM-DD')
 		const created = new Date().toISOString()
 		const result = await sql<User>`
-      INSERT INTO invoices (id, customer_id, amount, created_at, created, "name")
-      VALUES (${id}, ${customerID}, ${amount},  ${createdAt}, ${created}, ${name})
+      INSERT INTO invoices (id, customer_id, amount, created, "name")
+      VALUES (${id}, ${customerID}, ${amount}, ${created}, ${name})
     `
 		return result.rows[0]
 		// error

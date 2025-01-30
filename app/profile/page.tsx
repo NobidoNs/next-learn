@@ -4,10 +4,21 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 
+// todo limits
+
+interface Activity {
+	id: number
+	created: string
+	name: string
+	amount: number
+}
+
 export default function ProfilePage() {
 	const [session, setSession] = useState(null)
 	const [inputText, setInputText] = useState('')
 	const [inputValue, setInputValue] = useState('')
+	const [activities, setActivities] = useState<Activity[]>([])
+	const [currentPage, setCurrentPage] = useState(1)
 
 	const fetchMe = async (url: string) => {
 		const res = await fetch(url)
@@ -15,13 +26,22 @@ export default function ProfilePage() {
 		return data
 	}
 
+	const fetchActivities = async (page: number) => {
+		const res = await fetch(`/api/activities?page=${page}`)
+		const data = await res.json()
+		setActivities(data)
+	}
+
 	useEffect(() => {
 		const getSession = async () => {
 			const data = await fetchMe('/api/me')
 			setSession(data)
+			if (data) {
+				fetchActivities(currentPage)
+			}
 		}
 		getSession()
-	}, [])
+	}, [currentPage])
 
 	let image = '/icon.png'
 	let name = ''
@@ -54,8 +74,70 @@ export default function ProfilePage() {
 					amount: inputValue,
 				}),
 			})
+			setInputText('')
+			setInputValue('')
+			fetchActivities(currentPage)
 		}
 	}
+
+	const handlePageChange = (page: number) => {
+		setCurrentPage(page)
+		fetchActivities(page)
+	}
+
+	const renderActivities = () => {
+		if (!activities) {
+			return null
+		}
+
+		return activities.map(activity => (
+			<tr
+				key={activity.id}
+				className='hover:bg-purple-50 transition-colors duration-200'
+			>
+				<td className='p-4'>
+					{new Date(activity.created)
+						.toLocaleString('sv-SE', {
+							year: 'numeric',
+							month: '2-digit',
+							day: '2-digit',
+							hour: '2-digit',
+							minute: '2-digit',
+							hour12: false,
+						})
+						.replace(' ', ' ')
+						.replace(',', '')}
+				</td>
+				<td className='p-4 font-medium text-indigo-600'>{activity.name}</td>
+				<td className='p-4 text-green-600 font-medium'>+{activity.amount}</td>
+			</tr>
+		))
+	}
+
+	// const renderPagination = () => {
+	// 	const pageNumbers = []
+	// 	for (
+	// 		let i = 1;
+	// 		i <= Math.ceil(activities.length / activitiesPerPage);
+	// 		i++
+	// 	) {
+	// 		pageNumbers.push(i)
+	// 	}
+
+	// 	return pageNumbers.map(number => (
+	// 		<button
+	// 			key={number}
+	// 			className={`p-2 mx-1 rounded-lg ${
+	// 				number === currentPage
+	// 					? 'bg-gradient-to-r from-violet-500 to-indigo-500 text-white'
+	// 					: 'text-violet-700 hover:text-violet-900'
+	// 			}`}
+	// 			onClick={() => handlePageChange(number)}
+	// 		>
+	// 			{number}
+	// 		</button>
+	// 	))
+	// }
 
 	return (
 		<main className='flex min-h-screen flex-col p-6'>
@@ -200,31 +282,10 @@ export default function ProfilePage() {
 										<th className='p-4 text-violet-700'>Points</th>
 									</tr>
 								</thead>
-								<tbody>
-									<tr className='hover:bg-purple-50 transition-colors duration-200'>
-										<td className='p-4'>2023-12-01</td>
-										<td className='p-4 font-medium text-indigo-600'>
-											Won tournament
-										</td>
-										<td className='p-4 text-green-600 font-medium'>+50</td>
-									</tr>
-									<tr className='hover:bg-purple-50 transition-colors duration-200'>
-										<td className='p-4'>2023-11-28</td>
-										<td className='p-4 font-medium text-indigo-600'>
-											Daily challenge completed
-										</td>
-										<td className='p-4 text-green-600 font-medium'>+10</td>
-									</tr>
-									<tr className='hover:bg-purple-50 transition-colors duration-200'>
-										<td className='p-4'>2023-11-25</td>
-										<td className='p-4 font-medium text-indigo-600'>
-											Achievement unlocked
-										</td>
-										<td className='p-4 text-green-600 font-medium'>+25</td>
-									</tr>
-								</tbody>
+								<tbody>{renderActivities()}</tbody>
 							</table>
 						</div>
+						{/* <div className='flex justify-center mt-4'>{renderPagination()}</div> */}
 					</div>
 				</div>
 			</div>
