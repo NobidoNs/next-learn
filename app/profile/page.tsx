@@ -28,6 +28,9 @@ export default function ProfilePage() {
 		const res = await fetch(url)
 		const data = await res.json()
 		setIsLoadingProfile(false)
+		if (data) {
+			setSession(data)
+		}
 		return data
 	}
 
@@ -112,9 +115,11 @@ export default function ProfilePage() {
 					amount: inputValue,
 				}),
 			})
+
 			setInputText('')
 			setInputValue('')
 			fetchActivities(currentPage)
+			fetchMe('/api/me')
 		}
 	}
 

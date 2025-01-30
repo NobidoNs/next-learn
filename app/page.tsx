@@ -3,8 +3,15 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 
+interface Player {
+	rank: number
+	name: string
+	score: number
+}
+
 export default function Page() {
 	const [session, setSession] = useState(null)
+	const [players, setPlayers] = useState<Player[]>([])
 
 	const fetchMe = async (url: string) => {
 		const res = await fetch(url)
@@ -17,15 +24,31 @@ export default function Page() {
 			const data = await fetchMe('/api/me')
 			setSession(data)
 		}
-		getSession()
-	}, [])
 
-	// const session = fetchMe('/api/me')
+		const getPlayers = async () => {
+			const data = await fetchMe('/api/players')
+			setPlayers(data)
+		}
+
+		getSession()
+		getPlayers()
+	}, [])
 
 	let image = '/icon.png'
 	if (session) {
 		image = session['image']
 	}
+
+	const renderPlayers = () => {
+		return players.map((player, index) => (
+			<tr key={index}>
+				<td>{player.rank}</td>
+				<td>{player.name}</td>
+				<td>{player.score}</td>
+			</tr>
+		))
+	}
+
 	return (
 		<main className='flex min-h-screen flex-col p-6'>
 			<Link href='/profile'>
@@ -49,23 +72,7 @@ export default function Page() {
 							<th>Score</th>
 						</tr>
 					</thead>
-					<tbody>
-						<tr>
-							<td>1</td>
-							<td>Player 1</td>
-							<td>1000</td>
-						</tr>
-						<tr>
-							<td>2</td>
-							<td>Player 2</td>
-							<td>850</td>
-						</tr>
-						<tr>
-							<td>3</td>
-							<td>Player 3</td>
-							<td>720</td>
-						</tr>
-					</tbody>
+					<tbody>{renderPlayers()}</tbody>
 				</table>
 			</div>
 		</main>
