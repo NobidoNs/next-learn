@@ -19,6 +19,7 @@ export default function ProfilePage() {
 	const [inputValue, setInputValue] = useState('')
 	const [activities, setActivities] = useState<Activity[]>([])
 	const [currentPage, setCurrentPage] = useState(1)
+	const [totalPages, setTotalPages] = useState(1)
 
 	const fetchMe = async (url: string) => {
 		const res = await fetch(url)
@@ -29,7 +30,8 @@ export default function ProfilePage() {
 	const fetchActivities = async (page: number) => {
 		const res = await fetch(`/api/activities?page=${page}`)
 		const data = await res.json()
-		setActivities(data)
+		setActivities(data.invoices)
+		setTotalPages(data.totalPages)
 	}
 
 	useEffect(() => {
@@ -80,9 +82,13 @@ export default function ProfilePage() {
 		}
 	}
 
-	const handlePageChange = (page: number) => {
-		setCurrentPage(page)
-		fetchActivities(page)
+	const handlePageChange = (page: string) => {
+		if (page === 'prev') {
+			setCurrentPage(currentPage - 1)
+		} else if (page === 'next') {
+			setCurrentPage(currentPage + 1)
+		}
+		fetchActivities(currentPage)
 	}
 
 	const renderActivities = () => {
@@ -113,31 +119,6 @@ export default function ProfilePage() {
 			</tr>
 		))
 	}
-
-	// const renderPagination = () => {
-	// 	const pageNumbers = []
-	// 	for (
-	// 		let i = 1;
-	// 		i <= Math.ceil(activities.length / activitiesPerPage);
-	// 		i++
-	// 	) {
-	// 		pageNumbers.push(i)
-	// 	}
-
-	// 	return pageNumbers.map(number => (
-	// 		<button
-	// 			key={number}
-	// 			className={`p-2 mx-1 rounded-lg ${
-	// 				number === currentPage
-	// 					? 'bg-gradient-to-r from-violet-500 to-indigo-500 text-white'
-	// 					: 'text-violet-700 hover:text-violet-900'
-	// 			}`}
-	// 			onClick={() => handlePageChange(number)}
-	// 		>
-	// 			{number}
-	// 		</button>
-	// 	))
-	// }
 
 	return (
 		<main className='flex min-h-screen flex-col p-6'>
@@ -285,7 +266,33 @@ export default function ProfilePage() {
 								<tbody>{renderActivities()}</tbody>
 							</table>
 						</div>
-						{/* <div className='flex justify-center mt-4'>{renderPagination()}</div> */}
+						<div className='relative flex justify-center items-center mt-4 px-8'>
+							<div className='absolute left-8'>
+								{currentPage > 1 && (
+									<button
+										className={`p-2 mx-1 rounded-lg bg-gradient-to-r from-violet-500 to-indigo-500 text-white hover:from-violet-600 hover:to-indigo-600 transition-colors duration-200 px-4 font-medium shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all`}
+										onClick={() => handlePageChange('prev')}
+									>
+										Previous
+									</button>
+								)}
+							</div>
+							<div className='flex items-center'>
+								<span className='px-4 py-2 text-lg font-semibold text-violet-700 bg-violet-50 rounded-lg'>
+									Page {currentPage} of {totalPages}
+								</span>
+							</div>
+							<div className='absolute right-8'>
+								{currentPage !== totalPages && (
+									<button
+										className={`p-2 mx-1 rounded-lg bg-gradient-to-r from-violet-500 to-indigo-500 text-white hover:from-violet-600 hover:to-indigo-600 transition-colors duration-200 px-4 font-medium shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all`}
+										onClick={() => handlePageChange('next')}
+									>
+										Next
+									</button>
+								)}
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>

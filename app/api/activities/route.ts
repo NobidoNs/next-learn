@@ -17,12 +17,17 @@ async function getUserID(email: string): Promise<User | undefined> {
 async function getUserInvoices(
 	customerID: string,
 	page: string
-): Promise<User[]> {
+): Promise<{ invoices: User[]; totalPages: number }> {
 	try {
 		const offset = (Number(page) - 1) * 5
+		const lines = 5
 		const userInvoices =
-			await sql<User>`SELECT * FROM invoices WHERE customer_id = ${customerID} ORDER BY created DESC LIMIT 5 OFFSET ${offset};`
-		return userInvoices.rows
+			await sql<User>`SELECT * FROM invoices WHERE customer_id = ${customerID} ORDER BY created DESC LIMIT ${lines} OFFSET ${offset};`
+		const totalCount = await sql<{
+			count: string
+		}>`SELECT COUNT(*) FROM invoices WHERE customer_id = ${customerID}`
+		const totalPages = Math.ceil(Number(totalCount.rows[0].count) / lines)
+		return { invoices: userInvoices.rows, totalPages }
 	} catch (error) {
 		console.error('Failed to fetch user invoices:', error)
 		throw new Error('Failed to fetch user invoices.')
