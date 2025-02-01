@@ -17,8 +17,8 @@ async function createInvoice(
       INSERT INTO invoices (id, customer_id, amount, created, "name")
       VALUES (${id}, ${customerID}, ${amount}, ${created}, ${name})
     `
-		await sql`UPDATE users SET score = CAST(score AS INTEGER) + ${amount} WHERE id = ${customerID};`
-		await sql`
+		await client.sql`UPDATE users SET score = CAST(score AS INTEGER) + ${amount} WHERE id = ${customerID};`
+		await client.sql`
             WITH RankedUsers AS (
 							SELECT id, ROW_NUMBER() OVER (ORDER BY score DESC) AS rank
 							FROM users
