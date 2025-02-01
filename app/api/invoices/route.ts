@@ -1,5 +1,6 @@
 import { sql } from '@vercel/postgres'
 import type { User } from '@/app/lib/definitions'
+import { db } from '@vercel/postgres'
 
 async function createInvoice(
 	customerID: string,
@@ -11,11 +12,22 @@ async function createInvoice(
 
 	try {
 		const created = new Date().toISOString()
-		const result = await sql<User>`
+		const client = await db.connect()
+		const result = await client.sql<User>`
       INSERT INTO invoices (id, customer_id, amount, created, "name")
       VALUES (${id}, ${customerID}, ${amount}, ${created}, ${name})
     `
 		await sql`UPDATE users SET score = CAST(score AS INTEGER) + ${amount} WHERE id = ${customerID};`
+		await sql`
+            WITH RankedUsers AS (
+							SELECT id, ROW_NUMBER() OVER (ORDER BY score DESC) AS rank
+							FROM users
+            )
+            UPDATE users
+            SET rank = RankedUsers.rank
+            FROM RankedUsers
+            WHERE users.id = RankedUsers.id;
+        `
 		return result.rows[0]
 	} catch (error) {
 		console.error('Failed to create user:', error)

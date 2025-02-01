@@ -1,13 +1,15 @@
 import { authConfig } from '@/configs/auth'
 import { getServerSession } from 'next-auth/next'
-import { sql } from '@vercel/postgres'
 import type { User } from '@/app/lib/definitions'
+import { db } from '@vercel/postgres'
 
 async function getUser(
 	email: string | null | undefined
 ): Promise<User | undefined> {
 	try {
-		const user = await sql<User>`SELECT * FROM users WHERE email=${email}`
+		const client = await db.connect()
+		const user =
+			await client.sql<User>`SELECT * FROM users WHERE email=${email}`
 		return user.rows[0]
 	} catch (error) {
 		console.error('Failed to fetch user:', error)

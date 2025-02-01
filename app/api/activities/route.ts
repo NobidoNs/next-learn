@@ -1,11 +1,13 @@
-import { sql } from '@vercel/postgres'
 import type { User } from '@/app/lib/definitions'
 import { getServerSession } from 'next-auth/next'
 import { authConfig } from '@/configs/auth'
+import { db } from '@vercel/postgres'
 
 async function getUserID(email: string): Promise<User | undefined> {
 	try {
-		const userID = await sql<User>`SELECT id FROM users WHERE email=${email}`
+		const client = await db.connect()
+		const userID =
+			await client.sql<User>`SELECT id FROM users WHERE email=${email}`
 
 		return userID.rows[0]
 	} catch (error) {
@@ -21,12 +23,14 @@ async function getUserInvoices(
 	try {
 		const offset = (Number(page) - 1) * 5
 		const lines = 5
+		const client = await db.connect()
 		const userInvoices =
-			await sql<User>`SELECT * FROM invoices WHERE customer_id = ${customerID} ORDER BY created DESC LIMIT ${lines} OFFSET ${offset};`
-		const totalCount = await sql<{
+			await client.sql<User>`SELECT * FROM invoices WHERE customer_id = ${customerID} ORDER BY created DESC LIMIT ${lines} OFFSET ${offset};`
+		const totalCount = await client.sql<{
 			count: string
 		}>`SELECT COUNT(*) FROM invoices WHERE customer_id = ${customerID}`
-		const totalPages = Math.ceil(Number(totalCount.rows[0].count) / lines)
+		const count = Number(totalCount.rows[0].count) / lines
+		const totalPages = Math.max(1, Math.ceil(count))
 		return { invoices: userInvoices.rows, totalPages }
 	} catch (error) {
 		console.error('Failed to fetch user invoices:', error)

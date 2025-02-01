@@ -4,12 +4,13 @@ import Credentials from 'next-auth/providers/credentials'
 import { z } from 'zod'
 import bcrypt from 'bcrypt'
 import type { User } from '@/app/lib/definitions'
-import { sql } from '@vercel/postgres'
-import dayjs from 'dayjs'
+import { db } from '@vercel/postgres'
 
 async function getUser(email: string): Promise<User | undefined> {
 	try {
-		const user = await sql<User>`SELECT * FROM users WHERE email=${email}`
+		const client = await db.connect()
+		const user =
+			await client.sql<User>`SELECT * FROM users WHERE email=${email}`
 		return user.rows[0]
 	} catch (error) {
 		console.error('Failed to fetch user:', error)
@@ -37,11 +38,12 @@ async function createUser(
 	}
 	// add to db
 	try {
-		const result = await sql<User>`
-      INSERT INTO users (id, email, password, name, created, created_at, image, rank, score)
+		const client = await db.connect()
+		const result = await client.sql<User>`
+      INSERT INTO users (id, email, password, name, created, image, rank, score)
       VALUES (${id}, ${email}, ${hashedPassword}, ${
 			name || null
-		}, ${Date.now()}, ${dayjs().format('YYYY-MM-DD')}, ${image}, ${'-'}, ${0})
+		}, ${Date.now()}, ${image}, ${'-'}, ${0})
       RETURNING *
     `
 		return result.rows[0]
