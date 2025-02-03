@@ -7,6 +7,7 @@ import type { User } from '@/app/lib/definitions'
 import { db } from '@vercel/postgres'
 
 async function getUser(email: string): Promise<User | undefined> {
+	if (!email) return undefined
 	try {
 		const client = await db.connect()
 		const user =
@@ -61,7 +62,10 @@ export const authConfig: AuthOptions = {
 	callbacks: {
 		async session({ session, user, token }) {
 			const userData = await getUser(session.user?.email!)
-			if (!userData) {
+			if (userData) {
+				console.log('userFound', userData)
+			} else {
+				console.log('createUser', session.user?.email)
 				await createUser(
 					session.user?.email!,
 					token.password as string,
@@ -69,9 +73,7 @@ export const authConfig: AuthOptions = {
 					session.user?.image as string
 				)
 			}
-			return {
-				...session,
-			}
+			return session
 		},
 	},
 	providers: [
