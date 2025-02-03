@@ -1,6 +1,6 @@
 import Redis from 'ioredis'
 import type { User } from '@/app/lib/definitions'
-import { db } from '@vercel/postgres'
+import { createClient } from '@vercel/postgres'
 
 // const redis = new Redis()
 
@@ -11,10 +11,9 @@ async function getPlayers(): Promise<User[]> {
 	// if (cachedData) {
 	// 	return JSON.parse(cachedData)
 	// }
-
+	const client = createClient()
+	await client.connect()
 	try {
-		const client = await db.connect()
-
 		const data =
 			await client.sql<User>`SELECT name, score, rank FROM users ORDER BY score DESC;`
 		// await redis.set(cacheKey, JSON.stringify(data.rows), 'EX', 3600)
@@ -22,6 +21,8 @@ async function getPlayers(): Promise<User[]> {
 	} catch (error) {
 		console.error('Failed to fetch user:', error)
 		throw new Error('Failed to fetch user.')
+	} finally {
+		await client.end()
 	}
 }
 
