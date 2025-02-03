@@ -11,6 +11,7 @@ export function middleware(req: NextRequest) {
 	}
 
 	if (req.nextUrl.pathname.startsWith('/profile')) {
+		console.log('isLoggedIn', isLoggedIn)
 		if (!isLoggedIn) {
 			return NextResponse.redirect(new URL('/login', req.url))
 		}
