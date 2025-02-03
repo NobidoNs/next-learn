@@ -21,10 +21,17 @@ async function getUser(
 }
 
 export async function GET(request: Request) {
-	const session = await getServerSession(authConfig)
-	const data = await getUser(session?.user?.email)
+	let res = ''
+	try {
+		const session = await getServerSession(authConfig)
+		const data = await getUser(session?.user?.email)
 
-	return new Response(JSON.stringify(data), {
+		res = JSON.stringify(data)
+	} catch (error) {
+		console.error('Failed to fetch user:', error)
+	}
+
+	return new Response(res, {
 		status: 200,
 		headers: {
 			'Content-Type': 'application/json',
