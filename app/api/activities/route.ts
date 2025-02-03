@@ -1,11 +1,12 @@
 import type { User } from '@/app/lib/definitions'
 import { getServerSession } from 'next-auth/next'
 import { authConfig } from '@/configs/auth'
-import { db } from '@vercel/postgres'
+import { createClient } from '@vercel/postgres'
 
 async function getUserID(email: string): Promise<User | undefined> {
+	const client = createClient()
+	await client.connect()
 	try {
-		const client = await db.connect()
 		const userID =
 			await client.sql<User>`SELECT id FROM users WHERE email=${email}`
 
@@ -13,6 +14,8 @@ async function getUserID(email: string): Promise<User | undefined> {
 	} catch (error) {
 		console.error('Failed to fetch user:', error)
 		throw new Error('Failed to fetch user.')
+	} finally {
+		await client.end()
 	}
 }
 
@@ -20,10 +23,12 @@ async function getUserInvoices(
 	customerID: string,
 	page: string
 ): Promise<{ invoices: User[]; totalPages: number }> {
+	const client = createClient()
+	await client.connect()
 	try {
 		const offset = (Number(page) - 1) * 5
 		const lines = 5
-		const client = await db.connect()
+
 		const userInvoices =
 			await client.sql<User>`SELECT * FROM invoices WHERE customer_id = ${customerID} ORDER BY created DESC LIMIT ${lines} OFFSET ${offset};`
 		const totalCount = await client.sql<{
@@ -35,6 +40,8 @@ async function getUserInvoices(
 	} catch (error) {
 		console.error('Failed to fetch user invoices:', error)
 		throw new Error('Failed to fetch user invoices.')
+	} finally {
+		await client.end()
 	}
 }
 export async function GET(request: Request) {

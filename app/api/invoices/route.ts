@@ -1,6 +1,6 @@
 import { sql } from '@vercel/postgres'
 import type { User } from '@/app/lib/definitions'
-import { db } from '@vercel/postgres'
+import { createClient } from '@vercel/postgres'
 
 async function createInvoice(
 	customerID: string,
@@ -9,10 +9,11 @@ async function createInvoice(
 ): Promise<User> {
 	const { v4: uuidv4 } = require('uuid')
 	const id = uuidv4()
+	const client = createClient()
+	await client.connect()
 
 	try {
 		const created = new Date().toISOString()
-		const client = await db.connect()
 		const result = await client.sql<User>`
       INSERT INTO invoices (id, customer_id, amount, created, "name")
       VALUES (${id}, ${customerID}, ${amount}, ${created}, ${name})
@@ -32,6 +33,8 @@ async function createInvoice(
 	} catch (error) {
 		console.error('Failed to create user:', error)
 		throw new Error('Failed to create user.')
+	} finally {
+		await client.end()
 	}
 }
 
