@@ -4,6 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { ProfileSkeleton, ActivitiesSkeleton } from '@/app/ui/skeletons'
+import { signOut } from 'next-auth/react'
 
 // todo limits
 
@@ -72,10 +73,11 @@ export default function ProfilePage() {
 	}
 
 	const handleSignOut = async () => {
-		await fetch('/api/auth/signout', {
-			method: 'POST',
-		})
-		window.location.href = '/'
+		// await fetch('/api/auth/signout', {
+		// 	method: 'POST',
+		// })
+		// window.location.href = '/'
+		signOut({ callbackUrl: '/' })
 	}
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		if (session && inputText && inputValue) {
