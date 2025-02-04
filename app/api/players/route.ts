@@ -2,7 +2,7 @@ import Redis from 'ioredis'
 import type { User } from '@/app/lib/definitions'
 import { createClient } from '@vercel/postgres'
 
-async function getPlayers(): Promise<User[]> {
+async function getPlayers(): Promise<User[] | undefined> {
 	const client = createClient()
 	await client.connect()
 	try {
@@ -11,14 +11,13 @@ async function getPlayers(): Promise<User[]> {
 		return data.rows
 	} catch (error) {
 		console.error('Failed to fetch user:', error)
-		throw new Error('Failed to fetch user.')
 	} finally {
 		await client.end()
 	}
 }
 
 export async function GET(request: Request) {
-	const data = await getPlayers()
+	const data = (await getPlayers()) || ''
 	return new Response(JSON.stringify(data), {
 		status: 200,
 		headers: {

@@ -4,18 +4,20 @@ import Credentials from 'next-auth/providers/credentials'
 import { z } from 'zod'
 import bcrypt from 'bcrypt'
 import type { User } from '@/app/lib/definitions'
-import { db } from '@vercel/postgres'
+import { createClient } from '@vercel/postgres'
 
 async function getUser(email: string): Promise<User | undefined> {
 	if (!email) return undefined
+	const client = createClient()
+	await client.connect()
 	try {
-		const client = await db.connect()
 		const user =
 			await client.sql<User>`SELECT * FROM users WHERE email=${email}`
 		return user.rows[0]
 	} catch (error) {
 		console.error('Failed to fetch user:', error)
-		throw new Error('Failed to fetch user.')
+	} finally {
+		await client.end()
 	}
 }
 
@@ -38,8 +40,9 @@ async function createUser(
 		hashedPassword = 'supersecret'
 	}
 	// add to db
+	const client = createClient()
+	await client.connect()
 	try {
-		const client = await db.connect()
 		const result = await client.sql<User>`
       INSERT INTO users (id, email, password, name, created, image, rank, score)
       VALUES (${id}, ${email}, ${hashedPassword}, ${
@@ -52,6 +55,8 @@ async function createUser(
 	} catch (error) {
 		console.error('Failed to create user:', error)
 		throw new Error('Failed to create user.')
+	} finally {
+		await client.end()
 	}
 }
 
