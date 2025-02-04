@@ -21,7 +21,7 @@ async function getUser(
 }
 
 export async function GET(request: Request) {
-	let res = ''
+	let res = null
 	try {
 		const session = await getServerSession(authConfig)
 		const data = await getUser(session?.user?.email)

@@ -17,7 +17,7 @@ async function getPlayers(): Promise<User[] | undefined> {
 }
 
 export async function GET(request: Request) {
-	const data = (await getPlayers()) || ''
+	const data = (await getPlayers()) || null
 	return new Response(JSON.stringify(data), {
 		status: 200,
 		headers: {

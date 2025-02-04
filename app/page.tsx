@@ -15,19 +15,27 @@ export default function Page() {
 
 	const fetchMe = async (url: string) => {
 		const res = await fetch(url)
-		const data = await res.json()
-		return data
+		if (res.ok) {
+			const text = await res.text()
+			if (text) {
+				return JSON.parse(text)
+			}
+		}
 	}
 
 	useEffect(() => {
 		const getSession = async () => {
 			const data = await fetchMe('/api/me')
-			setSession(data)
+			if (data) {
+				setSession(data)
+			}
 		}
 
 		const getPlayers = async () => {
 			const data = await fetchMe('/api/players')
-			setPlayers(data)
+			if (data) {
+				setPlayers(data)
+			}
 		}
 
 		getSession()

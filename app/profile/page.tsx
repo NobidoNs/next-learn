@@ -71,6 +71,12 @@ export default function ProfilePage() {
 		score = session['score']
 	}
 
+	const handleSignOut = async () => {
+		await fetch('/api/auth/signout', {
+			method: 'POST',
+		})
+		window.location.href = '/'
+	}
 	const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
 		if (session && inputText && inputValue) {
 			e.preventDefault()
@@ -156,7 +162,10 @@ export default function ProfilePage() {
 					<span className='font-semibold tracking-wide'>Back to Home</span>
 				</Link>
 
-				<button className='group inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-pink-500 to-rose-400 text-white rounded-xl hover:from-pink-600 hover:to-rose-500 transition-all duration-300 shadow-lg transform hover:-translate-y-0.5'>
+				<button
+					className='group inline-flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-pink-500 to-rose-400 text-white rounded-xl hover:from-pink-600 hover:to-rose-500 transition-all duration-300 shadow-lg transform hover:-translate-y-0.5'
+					onClick={handleSignOut}
+				>
 					<span className='font-semibold tracking-wide'>Sign Out</span>
 					<svg
 						xmlns='http://www.w3.org/2000/svg'
