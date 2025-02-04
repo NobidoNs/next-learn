@@ -4,10 +4,13 @@ import { createClient } from '@vercel/postgres'
 
 async function getPlayers(): Promise<User[] | undefined> {
 	const client = createClient()
+	console.log(1)
 	await client.connect()
+	console.log(2)
 	try {
 		const data =
 			await client.sql<User>`SELECT name, score, rank FROM users ORDER BY score DESC;`
+		console.log(3)
 		return data.rows
 	} catch (error) {
 		console.error('Failed to fetch user:', error)
@@ -18,6 +21,7 @@ async function getPlayers(): Promise<User[] | undefined> {
 
 export async function GET(request: Request) {
 	const data = (await getPlayers()) || null
+	console.log(4)
 	return new Response(JSON.stringify(data), {
 		status: 200,
 		headers: {
