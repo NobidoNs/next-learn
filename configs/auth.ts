@@ -59,26 +59,34 @@ async function createUser(
 		await client.end()
 	}
 }
+const authLocks = new Map<string, boolean>()
 
 export const authConfig: AuthOptions = {
-	// pages: {
-	// 	signIn: '/login',
-	// },
 	callbacks: {
 		async session({ session, user, token }) {
-			const userData = await getUser(session.user?.email!)
-			if (userData) {
-				console.log('userFound', userData)
-			} else {
-				console.log('createUser', session.user?.email)
-				await createUser(
-					session.user?.email!,
-					token.password as string,
-					session.user?.name as string,
-					session.user?.image as string
-				)
+			const email = session.user?.email
+			if (!email) return session
+
+			if (authLocks.get(email)) {
+				return session
 			}
-			return session
+
+			authLocks.set(email, true)
+
+			try {
+				const userData = await getUser(email)
+				if (!userData) {
+					await createUser(
+						email,
+						token.password as string,
+						session.user?.name as string,
+						session.user?.image as string
+					)
+				}
+				return session
+			} finally {
+				authLocks.delete(email)
+			}
 		},
 	},
 	providers: [
@@ -86,34 +94,5 @@ export const authConfig: AuthOptions = {
 			clientId: process.env.GOOGLE_CLIENT_ID!,
 			clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
 		}),
-		// Credentials({
-		// 	credentials: {
-		// 		email: {
-		// 			label: 'Email',
-		// 			type: 'email',
-		// 			placeholder: 'Email',
-		// 			required: true,
-		// 		},
-		// 		password: { label: 'Password', type: 'password', required: true },
-		// 	},
-		// 	async authorize(credentials) {
-		// 		const parsedCredentials = z
-		// 			.object({ email: z.string().email(), password: z.string().min(6) })
-		// 			.safeParse(credentials)
-
-		// 		if (parsedCredentials.success) {
-		// 			const { email, password } = parsedCredentials.data
-
-		// 			const user = await getUser(email)
-		// 			if (!user) return null
-
-		// 			const passwordsMatch = await bcrypt.compare(password, user.password)
-		// 			if (passwordsMatch) return user
-		// 		}
-
-		// 		console.log('Invalid credentials')
-		// 		return null
-		// 	},
-		// }),
 	],
 }
