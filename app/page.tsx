@@ -49,50 +49,53 @@ export default function Page() {
 
 	const renderPlayers = () => {
 		return players.map((player, index) => (
-			<tr key={index}>
-				<td className='mobile:py-3 mobile:text-center'>{player.rank}</td>
-				<td className='mobile:py-3 mobile:px-2 mobile:text-center'>
-					{player.name}
+			<tr key={index} className='bg-gray-50'>
+				<td className='py-4 text-center text-black font-bold'>{player.rank}</td>
+				<td className='py-4 px-4 text-center font-medium'>{player.name}</td>
+				<td className='py-4 text-center text-blue-600 font-bold'>
+					{player.score}
 				</td>
-				<td className='mobile:py-3 mobile:text-center'>{player.score}</td>
 			</tr>
 		))
 	}
 
 	return (
-		<main className='flex min-h-screen flex-col p-6'>
+		<main className='flex min-h-screen flex-col p-4'>
 			<Link href='/profile'>
-				<div className='profile-icon'>
+				<div className='w-16 h-16 rounded-full overflow-hidden shadow-lg mx-auto mt-4'>
 					<Image
 						src={image}
 						width={800}
 						height={800}
-						alt='Screenshot of the dashboard project showing mobile version'
+						alt='profile-icon'
+						className='object-cover'
 					/>
 				</div>
 			</Link>
 
-			<div className='container'>
-				<div className='text-2xl mobile:font-bold mobile:text-center mobile:pt-12 mobile:text-gray-800'>
-					<h1>Leaderboard</h1>
+			<div className='max-w-[800px] mx-auto my-8 p-4 bg-white bg-opacity-30 rounded-xl shadow-md w-full'>
+				<div className='mb-8'>
+					<h1 className='text-2xl font-bold text-center text-gray-800'>
+						Leaderboard
+					</h1>
 				</div>
 
-				<div className='mobile:text-l mobile:font-bold mobile:text-center mobile:pt-12 mobile:text-gray-800'>
-					<table className='leaderboard-table'>
+				<div className='overflow-x-auto'>
+					<table className='w-full w-full bg-white bg-opacity-90 rounded-lg shadow-lg border-collapse overflow-hidden transition-transform duration-300 ease-in-out'>
 						<thead>
-							<tr className='mobile:bg-blue-600 mobile:text-white'>
-								<th className='mobile:py-3 mobile:text-sm mobile:font-medium mobile:w-1/4'>
+							<tr className='bg-blue-600 text-white'>
+								<th className='py-4 text-sm font-semibold w-1/4 rounded-tl-lg'>
 									Rank
 								</th>
-								<th className='mobile:py-3 mobile:text-sm mobile:font-medium mobile:w-2/4 mobile:text-center'>
-									Player
-								</th>
-								<th className='mobile:py-3 mobile:text-sm mobile:font-medium mobile:w-1/4'>
+								<th className='py-4 text-sm font-semibold w-2/4'>Player</th>
+								<th className='py-4 text-sm font-semibold w-1/4 rounded-tr-lg'>
 									Score
 								</th>
 							</tr>
 						</thead>
-						<tbody>{renderPlayers()}</tbody>
+						<tbody className='divide-y divide-gray-200'>
+							{renderPlayers()}
+						</tbody>
 					</table>
 				</div>
 			</div>

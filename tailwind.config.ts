@@ -10,6 +10,7 @@ const config: Config = {
 		extend: {
 			animation: {
 				'gradient-xy': 'gradient-xy 15s ease infinite',
+				fadeIn: 'fadeIn 0.5s ease-in',
 			},
 			gridTemplateColumns: {
 				'13': 'repeat(13, minmax(0, 1fr))',
@@ -26,6 +27,10 @@ const config: Config = {
 			},
 		},
 		keyframes: {
+			fadeIn: {
+				'0%': { opacity: '0' },
+				'100%': { opacity: '1' },
+			},
 			shimmer: {
 				'100%': {
 					transform: 'translateX(100%)',
