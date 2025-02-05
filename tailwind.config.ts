@@ -21,6 +21,9 @@ const config: Config = {
 					600: '#2F6FEB',
 				},
 			},
+			screens: {
+				mobile: { max: '767px' }, // Определяем мобильный размер
+			},
 		},
 		keyframes: {
 			shimmer: {

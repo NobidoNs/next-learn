@@ -50,9 +50,11 @@ export default function Page() {
 	const renderPlayers = () => {
 		return players.map((player, index) => (
 			<tr key={index}>
-				<td>{player.rank}</td>
-				<td>{player.name}</td>
-				<td>{player.score}</td>
+				<td className='mobile:py-3 mobile:text-center'>{player.rank}</td>
+				<td className='mobile:py-3 mobile:px-2 mobile:text-center'>
+					{player.name}
+				</td>
+				<td className='mobile:py-3 mobile:text-center'>{player.score}</td>
 			</tr>
 		))
 	}
@@ -71,17 +73,28 @@ export default function Page() {
 			</Link>
 
 			<div className='container'>
-				<h1>Leaderboard</h1>
-				<table className='leaderboard-table'>
-					<thead>
-						<tr>
-							<th>Rank</th>
-							<th>Player</th>
-							<th>Score</th>
-						</tr>
-					</thead>
-					<tbody>{renderPlayers()}</tbody>
-				</table>
+				<div className='text-2xl mobile:font-bold mobile:text-center mobile:pt-12 mobile:text-gray-800'>
+					<h1>Leaderboard</h1>
+				</div>
+
+				<div className='mobile:text-l mobile:font-bold mobile:text-center mobile:pt-12 mobile:text-gray-800'>
+					<table className='leaderboard-table'>
+						<thead>
+							<tr className='mobile:bg-blue-600 mobile:text-white'>
+								<th className='mobile:py-3 mobile:text-sm mobile:font-medium mobile:w-1/4'>
+									Rank
+								</th>
+								<th className='mobile:py-3 mobile:text-sm mobile:font-medium mobile:w-2/4 mobile:text-center'>
+									Player
+								</th>
+								<th className='mobile:py-3 mobile:text-sm mobile:font-medium mobile:w-1/4'>
+									Score
+								</th>
+							</tr>
+						</thead>
+						<tbody>{renderPlayers()}</tbody>
+					</table>
+				</div>
 			</div>
 		</main>
 	)

@@ -185,9 +185,8 @@ export default function ProfilePage() {
 					</svg>
 				</button>
 			</div>
-
-			<div className='container mx-auto max-w-6xl'>
-				<div className='bg-white/80 backdrop-blur-sm rounded-xl shadow-xl p-8 mt-0 border border-purple-100'>
+			<div className='container mx-auto max-w-6xl px-4 sm:px-6'>
+				<div className='bg-white/80 backdrop-blur-sm rounded-xl shadow-xl p-4 sm:p-8 mt-0 border border-purple-100 max-w-full'>
 					{isLoadingProfile ? (
 						<>
 							<ProfileSkeleton />
@@ -197,34 +196,38 @@ export default function ProfilePage() {
 						</>
 					) : (
 						<>
-							<div className='flex flex-col md:flex-row gap-8 items-center md:items-start'>
-								<div className='flex-shrink-0'>
+							<div className='flex flex-col md:flex-row gap-6 items-center md:items-start'>
+								<div className='flex-shrink-0 w-32 sm:w-40 md:w-[150px]'>
 									<Image
 										src={image}
 										width={150}
 										height={150}
-										className='rounded-full ring-4 ring-purple-200 shadow-lg transform hover:scale-105 transition-transform duration-300'
+										className='w-full h-auto rounded-full ring-4 ring-purple-200 shadow-lg'
 										alt='Profile picture'
 									/>
 								</div>
 
-								<div className='flex-grow'>
+								<div className='flex-grow min-w-0'>
 									<h1
 										className={`${lusitana.className} text-3xl font-bold mb-4 bg-gradient-to-r from-violet-600 to-indigo-600 text-transparent bg-clip-text`}
 									>
 										{name}
 									</h1>
 
-									<div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-6'>
-										<div className='stat-card p-6 bg-gradient-to-br from-violet-50 to-indigo-50 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 border border-purple-100'>
-											<h3 className='text-indigo-700 font-medium'>Rank</h3>
-											<p className='text-2xl font-bold text-indigo-700'>
+									<div className='grid grid-cols-2 gap-3 w-full mb-6'>
+										<div className='stat-card p-4 sm:p-6 bg-gradient-to-br from-violet-50 to-indigo-50 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 border border-purple-100'>
+											<h3 className='text-sm sm:text-base text-indigo-700 font-medium'>
+												Rank
+											</h3>
+											<p className='text-xl sm:text-2xl font-bold text-indigo-700'>
 												{rank}
 											</p>
 										</div>
-										<div className='stat-card p-6 bg-gradient-to-br from-pink-50 to-rose-50 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 border border-pink-100'>
-											<h3 className='text-indigo-700 font-medium'>Score</h3>
-											<p className='text-2xl font-bold text-indigo-700'>
+										<div className='stat-card p-4 sm:p-6 bg-gradient-to-br from-pink-50 to-rose-50 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 border border-pink-100'>
+											<h3 className='text-sm sm:text-base text-indigo-700 font-medium'>
+												Score
+											</h3>
+											<p className='text-xl sm:text-2xl font-bold text-indigo-700'>
 												{score}
 											</p>
 										</div>
@@ -249,38 +252,40 @@ export default function ProfilePage() {
 							</div>
 							<div className='mt-4'>
 								<form onSubmit={handleSubmit}>
-									<div className='flex gap-4'>
+									<div className='flex flex-col sm:flex-row gap-3'>
 										<input
 											type='text'
-											className='p-2 rounded-lg border border-purple-200 flex-grow'
+											className='p-3 rounded-lg border border-purple-200 w-full'
 											placeholder='Enter Task'
 											value={inputText}
 											onChange={e => setInputText(e.target.value)}
 										/>
-										<input
-											type='number'
-											className='p-2 rounded-lg border border-purple-200 w-20'
-											placeholder='Points'
-											value={inputValue}
-											onChange={e => {
-												const points = parseInt(e.target.value)
-												if (points >= 0 && points <= 100) {
-													setInputValue(points.toString() as string)
-												} else if (points < 0) {
-													setInputValue('0')
-												} else if (points > 100) {
-													setInputValue('100')
-												} else if (isNaN(points)) {
-													setInputValue('')
-												}
-											}}
-										/>
-										<button
-											type='submit'
-											className='p-2 rounded-lg bg-gradient-to-r from-violet-500 to-indigo-500 text-white hover:from-violet-600 hover:to-indigo-600 transition-colors duration-200'
-										>
-											Submit
-										</button>
+										<div className='flex gap-3'>
+											<input
+												type='number'
+												className='p-3 rounded-lg border border-purple-200 w-24'
+												placeholder='Points'
+												value={inputValue}
+												onChange={e => {
+													const points = parseInt(e.target.value)
+													if (points >= 0 && points <= 100) {
+														setInputValue(points.toString() as string)
+													} else if (points < 0) {
+														setInputValue('0')
+													} else if (points > 100) {
+														setInputValue('100')
+													} else if (isNaN(points)) {
+														setInputValue('')
+													}
+												}}
+											/>
+											<button
+												type='submit'
+												className='p-3 rounded-lg bg-gradient-to-r from-violet-500 to-indigo-500 text-white min-w-[100px] hover:from-violet-600 hover:to-indigo-600 transition-colors duration-200'
+											>
+												Submit
+											</button>
+										</div>
 									</div>
 								</form>
 							</div>
@@ -290,13 +295,19 @@ export default function ProfilePage() {
 								>
 									Recent Activity
 								</h2>
-								<div className='overflow-hidden rounded-xl border border-purple-100'>
-									<table className='w-full'>
+								<div className='overflow-x-auto -mx-4 sm:mx-0'>
+									<table className='w-full '>
 										<thead className='text-left bg-gradient-to-r from-violet-50 to-indigo-50'>
 											<tr>
-												<th className='p-4 text-violet-700'>Date</th>
-												<th className='p-4 text-violet-700'>Activity</th>
-												<th className='p-4 text-violet-700'>Points</th>
+												<th className='p-3 sm:p-4 text-sm sm:text-base text-violet-700'>
+													Date
+												</th>
+												<th className='p-3 sm:p-4 text-sm sm:text-base text-violet-700'>
+													Activity
+												</th>
+												<th className='p-3 sm:p-4 text-sm sm:text-base text-violet-700'>
+													Points
+												</th>
 											</tr>
 										</thead>
 										{isLoadingActivities ? (
@@ -313,32 +324,26 @@ export default function ProfilePage() {
 									</table>
 								</div>
 								{!isLoadingActivities && totalPages > 1 && (
-									<div className='relative flex justify-center items-center mt-4 px-8'>
-										<div className='absolute left-8'>
-											{currentPage > 1 && (
-												<button
-													className={`p-2 mx-1 rounded-lg bg-gradient-to-r from-violet-500 to-indigo-500 text-white hover:from-violet-600 hover:to-indigo-600 transition-colors duration-200 px-4 font-medium shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all`}
-													onClick={() => handlePageChange('prev')}
-												>
-													Previous
-												</button>
-											)}
-										</div>
-										<div className='flex items-center'>
-											<span className='px-4 py-2 text-lg font-semibold text-violet-700 bg-violet-50 rounded-lg'>
-												Page {currentPage} of {totalPages}
-											</span>
-										</div>
-										<div className='absolute right-8'>
-											{currentPage !== totalPages && (
-												<button
-													className={`p-2 mx-1 rounded-lg bg-gradient-to-r from-violet-500 to-indigo-500 text-white hover:from-violet-600 hover:to-indigo-600 transition-colors duration-200 px-4 font-medium shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all`}
-													onClick={() => handlePageChange('next')}
-												>
-													Next
-												</button>
-											)}
-										</div>
+									<div className='relative flex flex-col sm:flex-row justify-center items-center gap-4 mt-4 px-4 sm:px-8'>
+										{currentPage > 1 && (
+											<button
+												className='w-full sm:w-auto p-3 rounded-lg bg-gradient-to-r from-violet-500 to-indigo-500 text-white hover:from-violet-600 hover:to-indigo-600 transition-colors duration-200 px-4 font-medium shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all'
+												onClick={() => handlePageChange('prev')}
+											>
+												Previous
+											</button>
+										)}
+										<span className='text-base sm:text-lg font-semibold text-violet-700 bg-violet-50 rounded-lg px-4 py-2'>
+											Page {currentPage} of {totalPages}
+										</span>
+										{currentPage !== totalPages && (
+											<button
+												className='w-full sm:w-auto p-3 rounded-lg bg-gradient-to-r from-violet-500 to-indigo-500 text-white hover:from-violet-600 hover:to-indigo-600 transition-colors duration-200 px-4 font-medium shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all'
+												onClick={() => handlePageChange('next')}
+											>
+												Next
+											</button>
+										)}
 									</div>
 								)}
 							</div>
